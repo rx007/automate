@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/chef/automate/lib/grpc/auth_context"
@@ -28,6 +29,9 @@ type ReportingTransport struct {
 	ChefDeliveryUser  string
 	ChefDeliveryToken string
 }
+
+var once sync.Once
+var esClient *elastic.Client
 
 var err error
 
@@ -58,8 +62,25 @@ func (backend *ES2Backend) getHttpClient() *http.Client {
 }
 
 func (backend *ES2Backend) ES2Client() (*elastic.Client, error) {
+	//this is now a singleton as per best practice as outlined in the comment section of the elastic.NewClient
+	once.Do(func() {
+		esClient, err = backend.ES2ClientSimple()
+	})
+	return esClient, err
+}
+
+func (backend *ES2Backend) ES2ClientFull() (*elastic.Client, error) {
 	//logrus.Debugf("Creating ES client...")
 	return elastic.NewClient(
+		elastic.SetHttpClient(backend.getHttpClient()),
+		elastic.SetURL(backend.ESUrl),
+		elastic.SetSniff(false),
+		//elastic.SetTraceLog(logrus.New()), // logging from the elastic library. We could enable this when the log level is debug
+	)
+}
+
+func (backend *ES2Backend) ES2ClientSimple() (*elastic.Client, error) {
+	return elastic.NewSimpleClient(
 		elastic.SetHttpClient(backend.getHttpClient()),
 		elastic.SetURL(backend.ESUrl),
 		elastic.SetSniff(false),
