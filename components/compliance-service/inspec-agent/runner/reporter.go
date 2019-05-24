@@ -10,15 +10,15 @@ import (
 	"github.com/chef/automate/components/compliance-service/ingest/ingestic/mappings"
 	"github.com/chef/automate/components/compliance-service/inspec-agent/types"
 	"github.com/golang/protobuf/jsonpb"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
-func (r *Runner) reportIt(ctx context.Context, job *types.InspecJob, content []byte, reportID string) {
+func (r *Runner) reportIt(ctx context.Context, job *types.InspecJob, content []byte, reportID string) error {
 	var report compliance.Report
 	unmarshaler := &jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err := unmarshaler.Unmarshal(bytes.NewReader(content), &report); err != nil {
-		logrus.Errorf("reportToGRPC was unable to unmarshal the report output into a compliance.Report struct: %s", err.Error())
-		return
+		return errors.Wrap(err, "reportIt was unable to unmarshal the report output into a compliance.Report struct")
 	}
 
 	report.Environment = job.InspecBaseJob.NodeEnv
@@ -43,8 +43,24 @@ func (r *Runner) reportIt(ctx context.Context, job *types.InspecJob, content []b
 	report.Tags = job.Tags
 	logrus.Debugf("hand-over report to ingest service")
 
+	//if len(report.Profiles) > 0 {
+	//	firstProfile := report.Profiles[0]
+	//	for i := 0; i < 10000; i++ {
+	//		firstProfile.Controls = append(firstProfile.Controls, &inspec2.Control{
+	//			Id:    fmt.Sprintf("bla-id-%d", i),
+	//			Title: fmt.Sprintf("bla bla bla bla bla bla %d", i),
+	//			Desc:  "bla Parameter 'sort' only supports one of the following fields, Parameter 'sort' only supports one of the following fields, Parameter 'sort' only supports one of the following fields",
+	//			Code: `if hash, ok := dependsHash[esInSpecProfileDep.Name]; ok {
+	//			  esInSpecProfileDep.Status = hash.Status
+	//			  esInSpecProfileDep.SkipMessage = hash.SkipMessage
+	//		}`,
+	//		})
+	//	}
+	//}
+
 	_, err := r.ingestClient.ProcessComplianceReport(ctx, &report)
 	if err != nil {
-		logrus.Errorf("reportToGRPC error calling ProcessComplianceReport: %s", err)
+		return errors.Wrap(err, "reportIt error calling ProcessComplianceReport")
 	}
+	return nil
 }
