@@ -1,4 +1,4 @@
-FROM        ubuntu:trusty
+FROM        ubuntu:trusty-20190515
 MAINTAINER  V
 
 RUN mkdir -p /root/.ssh && chown root:root /root/.ssh && chmod 755 /root/.ssh
