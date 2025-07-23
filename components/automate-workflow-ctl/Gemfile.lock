@@ -116,13 +116,13 @@ GEM
     mixlib-cli (1.7.0)
     mixlib-config (2.2.18)
       tomlrb
-    mixlib-install (3.11.12)
+    mixlib-install (3.12.30)
       mixlib-shellout
       mixlib-versioning
       thor
     mixlib-log (1.7.1)
     mixlib-shellout (2.4.4)
-    mixlib-versioning (1.2.7)
+    mixlib-versioning (1.2.12)
     ms_rest (0.7.3)
       concurrent-ruby (~> 1.0)
       faraday (~> 0.9)
@@ -211,7 +211,7 @@ GEM
       sfl
     syslog-logger (1.6.8)
     systemu (2.6.5)
-    thor (0.20.3)
+    thor (1.4.0)
     timeliness (0.4.0)
     tomlrb (1.2.8)
     train (2.0.5)
@@ -257,7 +257,7 @@ DEPENDENCIES
   highline
   httpclient
   mixlib-config
-  mixlib-install
+  mixlib-install (>= 3.11.18)
   mixlib-shellout
   ohai (~> 8.24)
   pry

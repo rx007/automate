@@ -3,7 +3,7 @@ source "https://rubygems.org"
 gem "highline"
 gem "httpclient"
 gem "mixlib-config"
-gem "mixlib-install"
+gem "mixlib-install", ">= 3.11.18"
 gem "mixlib-shellout"
 gem "train"
 
