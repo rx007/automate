@@ -1,12 +1,12 @@
 # encoding: utf-8
 source 'https://rubygems.org'
 
-gem 'inspec'
+gem 'inspec', '>= 4.18.85'
 gem 'pry'
 gem 'rb-readline'
 gem 'forgery'
 gem 'terminal-table'
-gem 'thor'
+gem 'thor', '>= 1.4.0'
 gem 'colorize'
 gem 'pg'
 gem 'activesupport'
